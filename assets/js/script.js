@@ -1,4 +1,8 @@
 
+// =====================================
+// MOBILE NAVIGATION
+// =====================================
+
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
@@ -8,95 +12,222 @@ if (menuToggle && navLinks) {
         navLinks.classList.toggle("show");
     });
 
-    const links = navLinks.querySelectorAll("a");
+    navLinks.querySelectorAll("a").forEach(function (link) {
 
-    links.forEach(function(link) {
-        link.addEventListener("click", function() {
+        link.addEventListener("click", function () {
             navLinks.classList.remove("show");
         });
+
     });
 }
 
-// MENU CATEGORY FILTER
 
-const filterButtons = document.querySelectorAll(".filter-btn");
+// =====================================
+// MENU ELEMENTS
+// =====================================
 
-const menuProducts = document.querySelectorAll(
-    ".menu-product-card"
-);
+const menuSearch = document.getElementById("menuSearch");
 
-const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+
+const sortFilter = document.getElementById("sortFilter");
+
+const menuGrid = document.getElementById("menuGrid");
+
+const menuCards = document.querySelectorAll(".menu-card");
 
 const noProducts = document.getElementById("noProducts");
 
-let selectedCategory = "all";
 
-function filterMenu() {
+// Store original product order
 
-    const searchText = searchInput
-        ? searchInput.value.toLowerCase().trim()
+const originalOrder = Array.from(menuCards);
+
+
+// =====================================
+// SEARCH, CATEGORY AND SORTING
+// =====================================
+
+function filterProducts() {
+
+    const searchValue = menuSearch
+        ? menuSearch.value.toLowerCase().trim()
         : "";
+
+    const categoryValue = categoryFilter
+        ? categoryFilter.value.toLowerCase().trim()
+        : "all";
+
+    const sortValue = sortFilter
+        ? sortFilter.value
+        : "default";
+
+
+    // Start with original products
+
+    let sortedCards = [...originalOrder];
+
+
+    // =====================================
+    // SORT PRODUCTS
+    // =====================================
+
+    if (sortValue === "price-low") {
+
+        sortedCards.sort(function (a, b) {
+
+            return Number(a.dataset.price) -
+                   Number(b.dataset.price);
+
+        });
+
+    }
+
+    else if (sortValue === "price-high") {
+
+        sortedCards.sort(function (a, b) {
+
+            return Number(b.dataset.price) -
+                   Number(a.dataset.price);
+
+        });
+
+    }
+
+    else if (sortValue === "name-asc") {
+
+        sortedCards.sort(function (a, b) {
+
+            return a.dataset.name.localeCompare(b.dataset.name);
+
+        });
+
+    }
+
+    else if (sortValue === "name-desc") {
+
+        sortedCards.sort(function (a, b) {
+
+            return b.dataset.name.localeCompare(a.dataset.name);
+
+        });
+
+    }
+
+
+    // =====================================
+    // UPDATE PRODUCT ORDER
+    // =====================================
+
+    if (menuGrid) {
+
+        sortedCards.forEach(function (card) {
+
+            menuGrid.appendChild(card);
+
+        });
+
+    }
+
+
+    // =====================================
+    // APPLY SEARCH AND CATEGORY FILTER
+    // =====================================
 
     let visibleCount = 0;
 
-    menuProducts.forEach(function(product) {
+    sortedCards.forEach(function (card) {
 
-        const category = product.dataset.category;
+        const name = (card.dataset.name || "").toLowerCase();
 
-        const name = product.dataset.name;
+        const category = (card.dataset.category || "").toLowerCase();
 
-        const matchesCategory =
-            selectedCategory === "all" ||
-            category === selectedCategory;
+        const details = card.textContent.toLowerCase();
+
+
+        // Search matching
 
         const matchesSearch =
-            name.includes(searchText);
+            name.includes(searchValue) ||
+            category.includes(searchValue) ||
+            details.includes(searchValue);
 
-        if (matchesCategory && matchesSearch) {
 
-            product.style.display = "block";
+        // Category matching
+
+        const matchesCategory =
+            categoryValue === "all" ||
+            category === categoryValue;
+
+
+        // Display products
+
+        if (matchesSearch && matchesCategory) {
+
+            card.style.display = "";
+
             visibleCount++;
 
-        } else {
+        }
 
-            product.style.display = "none";
+        else {
+
+            card.style.display = "none";
 
         }
 
     });
 
+
+    // =====================================
+    // NO PRODUCTS MESSAGE
+    // =====================================
+
     if (noProducts) {
+
         noProducts.style.display =
             visibleCount === 0 ? "block" : "none";
+
     }
+
+}
+
+
+// =====================================
+// SEARCH EVENT
+// =====================================
+
+if (menuSearch) {
+
+    menuSearch.addEventListener("input", filterProducts);
+
 }
 
 
-// CATEGORY BUTTONS
+// =====================================
+// CATEGORY EVENT
+// =====================================
 
-filterButtons.forEach(function(button) {
+if (categoryFilter) {
 
-    button.addEventListener("click", function() {
-
-        filterButtons.forEach(function(btn) {
-            btn.classList.remove("active");
-        });
-
-        button.classList.add("active");
-
-        selectedCategory = button.dataset.category;
-
-        filterMenu();
-
-    });
-
-});
-
-
-// SEARCH
-
-if (searchInput) {
-
-    searchInput.addEventListener("input", filterMenu);
+    categoryFilter.addEventListener("change", filterProducts);
 
 }
+
+
+// =====================================
+// SORTING EVENT
+// =====================================
+
+if (sortFilter) {
+
+    sortFilter.addEventListener("change", filterProducts);
+
+}
+
+
+// =====================================
+// INITIALIZE MENU
+// =====================================
+
+filterProducts();

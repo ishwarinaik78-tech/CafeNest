@@ -181,14 +181,14 @@ function clean($value) {
     <!-- MESSAGES -->
     <?php if ($message !== ""): ?>
 
-        <div class="menu-message <?php echo $messageType; ?>">
+        <div class="menu-message <?php echo clean($messageType); ?>">
             <?php echo clean($message); ?>
         </div>
 
     <?php endif; ?>
 
 
-    <!-- SEARCH AND FILTER -->
+    <!-- SEARCH, CATEGORY AND SORT -->
     <div class="menu-controls">
 
         <input
@@ -211,6 +211,29 @@ function clean($value) {
 
         </select>
 
+        <!-- SORTING OPTIONS -->
+        <select id="sortFilter">
+
+            <option value="default">Sort By: Default</option>
+
+            <option value="price-low">
+                Price: Low to High
+            </option>
+
+            <option value="price-high">
+                Price: High to Low
+            </option>
+
+            <option value="name-asc">
+                Name: A to Z
+            </option>
+
+            <option value="name-desc">
+                Name: Z to A
+            </option>
+
+        </select>
+
     </div>
 
 
@@ -225,6 +248,7 @@ function clean($value) {
                     class="menu-card"
                     data-name="<?php echo clean(strtolower($product['name'])); ?>"
                     data-category="<?php echo clean(strtolower($product['category'])); ?>"
+                    data-price="<?php echo (float)$product['price']; ?>"
                 >
 
                     <div class="menu-image">
@@ -316,9 +340,14 @@ function clean($value) {
 
     </div>
 
+
+    <!-- NO MATCHING PRODUCTS -->
     <div class="no-products" id="noProducts" style="display:none;">
+
         <h3>No matching products found.</h3>
+
         <p>Try another search or category.</p>
+
     </div>
 
 </section>
@@ -345,64 +374,6 @@ function clean($value) {
 
 
 <script src="assets/js/script.js"></script>
-
-<script>
-
-// Search products
-const menuSearch = document.getElementById("menuSearch");
-const categoryFilter = document.getElementById("categoryFilter");
-const menuCards = document.querySelectorAll(".menu-card");
-const noProducts = document.getElementById("noProducts");
-
-function filterProducts() {
-
-    const searchValue = menuSearch.value.toLowerCase().trim();
-    const categoryValue = categoryFilter.value.toLowerCase();
-
-    let visibleCount = 0;
-
-    menuCards.forEach(card => {
-
-        const name = card.dataset.name;
-        const category = card.dataset.category;
-
-        const matchesSearch = name.includes(searchValue);
-
-        const matchesCategory =
-            categoryValue === "all" ||
-            category === categoryValue;
-
-        if (matchesSearch && matchesCategory) {
-
-            card.style.display = "block";
-            visibleCount++;
-
-        } else {
-
-            card.style.display = "none";
-
-        }
-
-    });
-
-    noProducts.style.display =
-        visibleCount === 0 ? "block" : "none";
-}
-
-menuSearch.addEventListener("input", filterProducts);
-
-categoryFilter.addEventListener("change", filterProducts);
-
-
-// Mobile navigation
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
-
-menuToggle.addEventListener("click", function() {
-    navLinks.classList.toggle("show");
-});
-
-</script>
 
 </body>
 </html>
