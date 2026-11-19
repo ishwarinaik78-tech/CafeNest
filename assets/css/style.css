@@ -2615,5 +2615,3 @@ button,input,select,textarea{font:inherit}
 @media(max-width:650px){.hero h1{letter-spacing:-1px}.hero-image img{height:290px}.cart-item,.checkout-form-box,.checkout-summary{border-radius:12px}.menu-page .menu-hero::after{inset:10px}.menu-page .menu-image{height:225px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
-
-
